@@ -13,9 +13,9 @@ export class RolesController {
   constructor(private roleService: RolesService) {}
 
   @ApiSecurity('bearer')
-  @Roles(Role.ADMIN)
+  /* @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard)
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard)*/
   @Post()
   create(@Body() dto: CreateRoleDto) {
     return this.roleService.createRole(dto);

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Req, Get, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   ApiOperation,
@@ -12,13 +12,18 @@ import { Role } from '../roles/enums/role.enum';
 import { RolesGuard } from '../roles/guards/roles.guard';
 import { AddRoleDto } from './dto/add-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
+import { Product } from '../product/product.model';
+import { ProductService } from '../product/product.service';
+import { Request } from 'express';
 @ApiTags('Пользователи')
 @ApiSecurity('bearer')
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private productService: ProductService,
+  ) {}
 
   @ApiOperation({ summary: 'Получить всех пользователей' })
   @ApiResponse({ status: 200, type: [User] })
@@ -36,5 +41,15 @@ export class UsersController {
   @Post('/role')
   addRole(@Body() dto: AddRoleDto) {
     return this.usersService.addRole(dto);
+  }
+
+  @ApiOperation({ summary: 'Получить все продукты пользователя' })
+  @ApiResponse({ status: 200, type: [Product] })
+  @Roles(Role.USER)
+  @UseGuards(RolesGuard)
+  @Get('products')
+  getConsultation(@Req() req: Request) {
+    const user = req.user as { userId: number };
+    return this.productService.findProductsByUserId(user.userId);
   }
 }

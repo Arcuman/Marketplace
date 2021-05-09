@@ -1,19 +1,21 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { RolesModule } from './roles/roles.module';
-import { ConfigModule } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { SequelizeModule } from '@nestjs/sequelize';
-import * as path from 'path';
+import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
 import { User } from './users/users.model';
+import { RolesModule } from './roles/roles.module';
+import { AuthModule } from './auth/auth.module';
 import { Role } from './roles/roles.model';
 import { UserRoles } from './roles/user-roles.model';
+import * as path from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { Sequelize } from 'sequelize-typescript';
+import { ProductModule } from './product/product.module';
+import { Product } from './product/product.model';
+import { FilesModule } from './files/files.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
-  controllers: [],
-  providers: [],
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,
@@ -28,12 +30,16 @@ import { Sequelize } from 'sequelize-typescript';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Role, UserRoles],
+      models: [User, Role, UserRoles, Product],
     }),
     UsersModule,
     RolesModule,
     AuthModule,
+    ProductModule,
+    CaslModule,
   ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {
   constructor(private sequelize: Sequelize) {
