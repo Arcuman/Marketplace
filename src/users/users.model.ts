@@ -9,6 +9,8 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../roles/roles.model';
 import { UserRoles } from '../roles/user-roles.model';
+import { Order } from '../orders/order.model';
+import { Product } from '../product/product.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -44,4 +46,10 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];
+
+  @HasMany(() => Product)
+  products: Product[];
+
+  @HasMany(() => Order)
+  orders: Order[];
 }

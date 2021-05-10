@@ -12,9 +12,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { Sequelize } from 'sequelize-typescript';
 import { ProductModule } from './product/product.module';
 import { Product } from './product/product.model';
-import { FilesModule } from './files/files.module';
 import { CaslModule } from './casl/casl.module';
-
+import { OrderModule } from './orders/order.module';
+import { Order } from './orders/order.model';
+import { OrderItem } from './orders/order-item.model';
+import { Role as RoleEnum } from './roles/enums/role.enum';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,19 +32,29 @@ import { CaslModule } from './casl/casl.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Role, UserRoles, Product],
+      models: [User, Role, UserRoles, Product, Order, OrderItem],
     }),
     UsersModule,
     RolesModule,
     AuthModule,
     ProductModule,
     CaslModule,
+    OrderModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {
   constructor(private sequelize: Sequelize) {
-    this.sequelize.sync({ alter: true });
+    this.sequelize.sync({ alter: true }).then(() =>
+      Role.count().then((count) => {
+        if (count === 0) {
+          Role.bulkCreate([
+            { value: RoleEnum.ADMIN, description: RoleEnum.ADMIN },
+            { value: RoleEnum.USER, description: RoleEnum.USER },
+          ]);
+        }
+      }),
+    );
   }
 }

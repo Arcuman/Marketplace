@@ -10,9 +10,12 @@ import { Role as RoleModel } from '../roles/roles.model';
 import { Product } from '../product/product.model';
 import { Injectable } from '@nestjs/common';
 import { Role } from '../roles/enums/role.enum';
+import { Order } from '../orders/order.model';
 
 type Subjects =
-  | InferSubjects<typeof User | typeof RoleModel | typeof Product>
+  | InferSubjects<
+      typeof User | typeof RoleModel | typeof Product | typeof Order
+    >
   | 'all';
 
 export enum Action {
@@ -37,9 +40,9 @@ export class CaslAbilityFactory {
     } else if (user.roles.includes(Role.ADMIN)) {
       can(Action.Manage, 'all'); // read-write access to everything
     } else {
-      can(Action.Read, 'all');
-      can(Action.Create, Product);
-      cannot(Action.Read, User);
+      can(Action.Read, [Product]);
+      can(Action.Read, [Order], { userId: user.userId });
+      can(Action.Create, [Product, Order]);
       can(Action.Update, [Product], { userId: user.userId });
       can(Action.Delete, [Product], { userId: user.userId });
     }

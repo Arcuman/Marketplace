@@ -6,11 +6,12 @@ import { Product } from './product.model';
 import { User } from '../users/users.model';
 import { FilesService } from '../files/files.service';
 import { CaslAbilityFactory } from '../casl/casl-ability.factory';
+import { OrderItem } from '../orders/order-item.model';
 
 @Module({
   controllers: [ProductController],
   providers: [ProductService, FilesService, CaslAbilityFactory],
-  imports: [SequelizeModule.forFeature([Product, User])],
+  imports: [SequelizeModule.forFeature([Product, User, OrderItem])],
   exports: [ProductService],
 })
 export class ProductModule {}

@@ -15,6 +15,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Product } from '../product/product.model';
 import { ProductService } from '../product/product.service';
 import { Request } from 'express';
+import { Order } from '../orders/order.model';
+import { OrderService } from '../orders/order.service';
 @ApiTags('Пользователи')
 @ApiSecurity('bearer')
 @UseGuards(JwtAuthGuard)
@@ -23,6 +25,7 @@ export class UsersController {
   constructor(
     private usersService: UsersService,
     private productService: ProductService,
+    private orderService: OrderService,
   ) {}
 
   @ApiOperation({ summary: 'Получить всех пользователей' })
@@ -48,8 +51,18 @@ export class UsersController {
   @Roles(Role.USER)
   @UseGuards(RolesGuard)
   @Get('products')
-  getConsultation(@Req() req: Request) {
+  getProducts(@Req() req: Request) {
     const user = req.user as { userId: number };
     return this.productService.findProductsByUserId(user.userId);
+  }
+
+  @ApiOperation({ summary: 'Получить все покупки пользователя' })
+  @ApiResponse({ status: 200, type: [Order] })
+  @Roles(Role.USER)
+  @UseGuards(RolesGuard)
+  @Get('orders')
+  getUserOrders(@Req() req: Request) {
+    const user = req.user as { userId: number };
+    return this.orderService.findOrderByUserId(user.userId);
   }
 }

@@ -140,7 +140,6 @@ export class ProductController {
   ) {
     const ability = this.caslAbilityFactory.createForUser(req.user);
     const product = await this.productService.findOne(id);
-    console.log(ability.rules);
     if (!product) {
       throw new NotFoundException();
     }

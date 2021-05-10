@@ -36,7 +36,7 @@ export class CreateProductDto {
   })
   @IsNotEmpty({ message: 'Обязательное поле' })
   @Min(0)
-  cost: number;
+  price: number;
 
   @ApiProperty({
     example: 1,

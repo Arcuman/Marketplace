@@ -3,17 +3,19 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Length,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/users.model';
+import { OrderItem } from '../orders/order-item.model';
 
 interface ProductCreationAttrs {
   name: string;
   description: string;
-  cost: number;
+  price: number;
   quantity: number;
   photo: any;
   userId: number;
@@ -41,8 +43,8 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   description: string;
 
   @ApiProperty({ example: 20, description: 'Цена', type: 'Number' })
-  @Column({ type: DataType.DECIMAL, allowNull: false })
-  cost: number;
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  price: number;
 
   @ApiProperty({ example: 20, description: 'Цена', type: 'Number' })
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -65,4 +67,7 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
   @BelongsTo(() => User)
   seller: User;
+
+  @HasMany(() => OrderItem)
+  orderItems: OrderItem[];
 }
