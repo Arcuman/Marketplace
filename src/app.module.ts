@@ -32,6 +32,9 @@ import { Role as RoleEnum } from './roles/enums/role.enum';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       database: process.env.POSTGRES_DB,
+      dialectOptions: {
+        ssl: { rejectUnauthorized: false },
+      },
       models: [User, Role, UserRoles, Product, Order, OrderItem],
     }),
     UsersModule,
