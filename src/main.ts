@@ -17,7 +17,7 @@ async function bootstrap() {
       type: 'http',
       scheme: 'bearer',
     })
-    .addServer('https://a9f2f181fe2d.ngrok.io/api/')
+    .addServer('https://afternoon-waters-64991.herokuapp.com/api/')
     .addServer('http://localhost:5000/api/')
     .build();
   const document = SwaggerModule.createDocument(app, config);
