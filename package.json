@@ -15,6 +15,7 @@
     "start:debug": "nest start --debug --watch",
     "build": "tsc -p tsconfig.build.json",
     "postinstall": "npm run prestart:prod",
+    "preinstall:prod": "rimraf dist",
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
