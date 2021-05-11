@@ -8,14 +8,13 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build:nest": "nest build",
-    "tsc": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=production nest start",
     "start:dev": " cross-env NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "tsc -p tsconfig.build.json",
+    "prestart:prod": "rimraf dist && npm run build",
     "postinstall": "npm run prestart:prod",
-    "preinstall:prod": "rimraf dist",
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
@@ -51,8 +50,7 @@
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",
     "swagger-ui-express": "^4.1.6",
-    "uuid": "^8.3.2",
-    "typescript": "^4.2.3"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
@@ -76,7 +74,8 @@
     "ts-jest": "^26.5.4",
     "ts-loader": "^8.0.18",
     "ts-node": "^9.1.1",
-    "tsconfig-paths": "^3.9.0"
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.2.3"
   },
   "jest": {
     "moduleFileExtensions": [
