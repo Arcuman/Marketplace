@@ -4,15 +4,9 @@ import {
   Post,
   Body,
   Param,
-  UseInterceptors,
   UseGuards,
-  UploadedFile,
-  Query,
   NotFoundException,
   Req,
-  Delete,
-  Put,
-  Patch,
   ForbiddenException,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
@@ -20,14 +14,14 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import {
   ApiBody,
   ApiConsumes,
-  ApiQuery,
+  ApiInternalServerErrorResponse,
+  ApiOperation,
   ApiResponse,
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Order } from './order.model';
-import { Role } from '../roles/enums/role.enum';
 import {
   Action,
   AppAbility,
@@ -35,10 +29,12 @@ import {
 } from '../casl/casl-ability.factory';
 import { PoliciesGuard } from '../casl/guards/policies-guard.guard';
 import { CheckPolicies } from '../casl/decorators/check-policies-key';
-import { Request } from 'express';
 import { RequestUser } from '../types/request-user';
+import { UnAthorizationResponse } from '../types/response/UnAthorizationResponse';
+import { BadRequestExeption } from '../types/response/BadRequestExeption';
 
 @ApiTags('Заказы')
+@ApiInternalServerErrorResponse()
 @ApiSecurity('bearer')
 @Controller('orders')
 export class OrderController {
@@ -47,7 +43,10 @@ export class OrderController {
     private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
+  @ApiOperation({ summary: 'Сделать заказ' })
   @ApiResponse({ status: 200, type: Order })
+  @ApiResponse({ status: 401, type: UnAthorizationResponse })
+  @ApiResponse({ status: 400, type: BadRequestExeption })
   @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Order))
   @UseGuards(JwtAuthGuard)
@@ -56,6 +55,7 @@ export class OrderController {
     return this.orderService.create(createOrderDto, req.user.userId);
   }
 
+  @ApiOperation({ summary: 'Получить все товары в заказе' })
   @ApiResponse({ status: 200, type: Order })
   @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Order))

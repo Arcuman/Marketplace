@@ -13,14 +13,13 @@ export class ValidationPipe implements PipeTransform<any> {
     if (metadata.type === 'query') {
       return value;
     }
-    console.log('ValidationPipe');
-    console.log(obj);
     const errors = await validate(obj, {});
     if (errors.length) {
       const messages = errors.map((err) => {
         return `${err.property} - ${Object.values(err.constraints).join(', ')}`;
       });
-      throw new ValidationException(messages);
+      const validErrorsResponse = { message: messages, statusCode: 400 };
+      throw new ValidationException(validErrorsResponse);
     }
     return value;
   }

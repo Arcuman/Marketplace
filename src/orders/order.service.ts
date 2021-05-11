@@ -51,9 +51,9 @@ export class OrderService {
         .quantity;
       const leftQuantity = product.quantity - quantity;
       if (leftQuantity < 0) {
-        throw new BadRequestException(
+        throw new BadRequestException([
           `Не хватает товаров для продукта ${product.name}`,
-        );
+        ]);
       }
       return {
         quantity,

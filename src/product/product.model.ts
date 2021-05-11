@@ -11,6 +11,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/users.model';
 import { OrderItem } from '../orders/order-item.model';
+import { Exclude, Expose } from 'class-transformer';
 
 interface ProductCreationAttrs {
   name: string;
@@ -21,6 +22,7 @@ interface ProductCreationAttrs {
   userId: number;
 }
 
+@Exclude()
 @Table({ tableName: 'products' })
 export class Product extends Model<Product, ProductCreationAttrs> {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
@@ -57,14 +59,12 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   photo: string;
 
-  @ApiProperty({
-    example: 2,
-    description: 'Идентификатор продавца',
-  })
+  @Expose()
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
   userId: number;
 
+  @ApiProperty({ example: User, description: 'Цена', type: () => User })
   @BelongsTo(() => User)
   seller: User;
 

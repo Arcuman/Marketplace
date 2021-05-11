@@ -35,7 +35,7 @@ export class UpdateProductDto {
     return -1;
   })
   @IsNotEmpty({ message: 'Обязательное поле' })
-  @Min(0)
+  @Min(0, { message: 'Минимальное значение 0' })
   price: number;
 
   @ApiProperty({
@@ -50,6 +50,6 @@ export class UpdateProductDto {
     return -1;
   })
   @IsNotEmpty({ message: 'Обязательное поле' })
-  @Min(1)
+  @Min(1, { message: 'Минимальное значени 1' })
   quantity: number;
 }

@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './product.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { FilesService, FileType } from '../files/files.service';
+import { User } from '../users/users.model';
 
 @Injectable()
 export class ProductService {
@@ -33,7 +34,9 @@ export class ProductService {
   }
 
   async findOne(id: number) {
-    return await this.productRepository.findByPk(id);
+    return await this.productRepository.findByPk(id, {
+      include: [User],
+    });
   }
 
   async delete(id: number) {

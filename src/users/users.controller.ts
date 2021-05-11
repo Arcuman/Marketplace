@@ -1,6 +1,7 @@
 import { Body, Controller, Req, Get, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
+  ApiInternalServerErrorResponse,
   ApiOperation,
   ApiResponse,
   ApiSecurity,
@@ -17,6 +18,9 @@ import { ProductService } from '../product/product.service';
 import { Request } from 'express';
 import { Order } from '../orders/order.model';
 import { OrderService } from '../orders/order.service';
+import { BadRequestExeption } from '../types/response/BadRequestExeption';
+
+@ApiInternalServerErrorResponse()
 @ApiTags('Пользователи')
 @ApiSecurity('bearer')
 @UseGuards(JwtAuthGuard)
@@ -39,6 +43,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Выдать роль' })
   @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 400, type: BadRequestExeption })
   @Roles(Role.USER)
   @UseGuards(RolesGuard)
   @Post('/role')

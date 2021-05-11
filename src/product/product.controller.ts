@@ -16,10 +16,15 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import {
+  CreateProductDto,
+  CreateProductDtoResp,
+} from './dto/create-product.dto';
 import {
   ApiBody,
   ApiConsumes,
+  ApiInternalServerErrorResponse,
+  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiSecurity,
@@ -42,9 +47,12 @@ import { PoliciesGuard } from '../casl/guards/policies-guard.guard';
 import { CheckPolicies } from '../casl/decorators/check-policies-key';
 import { Request } from 'express';
 import { RequestUser } from '../types/request-user';
+import { UnAthorizationResponse } from '../types/response/UnAthorizationResponse';
+import { classToPlain, plainToClass } from 'class-transformer';
+import { BadRequestExeption } from '../types/response/BadRequestExeption';
 
 @ApiTags('Продукты')
-@ApiSecurity('bearer')
+@ApiInternalServerErrorResponse()
 @Controller('products')
 export class ProductController {
   constructor(
@@ -52,7 +60,11 @@ export class ProductController {
     private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
-  @ApiResponse({ status: 200, type: Product })
+  @ApiOperation({ summary: 'Добавить новый товар' })
+  @ApiSecurity('bearer')
+  @ApiResponse({ status: 401, type: UnAthorizationResponse })
+  @ApiResponse({ status: 400, type: BadRequestExeption })
+  @ApiResponse({ status: 201, type: CreateProductDtoResp })
   @UseInterceptors(FileInterceptor('photo'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -63,15 +75,21 @@ export class ProductController {
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Product))
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(
+  async create(
     @UploadedFile() photo,
     @Body() createProductDto: CreateProductDto,
     @Req() req: Request,
   ) {
     const user = req.user as { userId: number; roles: Role[] };
-    return this.productService.create(createProductDto, photo, user.userId);
+    const product = await this.productService.create(
+      createProductDto,
+      photo,
+      user.userId,
+    );
+    return plainToClass(CreateProductDtoResp, product);
   }
 
+  @ApiOperation({ summary: 'Получить все продукты' })
   @Get()
   @ApiResponse({ status: 200, type: [Product] })
   @UseGuards(PoliciesGuard)
@@ -82,9 +100,10 @@ export class ProductController {
     return this.productService.findAll(offset, limit);
   }
 
+  @ApiOperation({ summary: 'Получить информацию о конкретном продукте' })
   @ApiResponse({ status: 200, type: Product })
   @UseGuards(PoliciesGuard)
-  @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Product))
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Product))
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const product = await this.productService.findOne(+id);
@@ -94,6 +113,10 @@ export class ProductController {
     return product;
   }
 
+  @ApiOperation({ summary: 'Обновить информацию о продукте' })
+  @ApiSecurity('bearer')
+  @ApiResponse({ status: 401, type: UnAthorizationResponse })
+  @ApiResponse({ status: 400, type: BadRequestExeption })
   @ApiResponse({ status: 200, type: Product })
   @ApiBody({
     description: 'Обновить главную информацию',
@@ -124,7 +147,10 @@ export class ProductController {
     throw new ForbiddenException('Нет доступа к этому продукту');
   }
 
+  @ApiOperation({ summary: 'Обновить картинку продукта' })
   @ApiResponse({ status: 201, type: Product })
+  @ApiResponse({ status: 401, type: UnAthorizationResponse })
+  @ApiSecurity('bearer')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -156,6 +182,8 @@ export class ProductController {
     throw new ForbiddenException('Нет доступа к этому продукту');
   }
 
+  @ApiOperation({ summary: 'Удалить товар' })
+  @ApiSecurity('bearer')
   @ApiResponse({ status: 200 })
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
