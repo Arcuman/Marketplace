@@ -11,15 +11,25 @@ import { ProductModule } from '../product/product.module';
 import { Order } from '../orders/order.model';
 import { Product } from '../product/product.model';
 import { OrderModule } from '../orders/order.module';
+import { Auction } from '../auction/auction.model';
+import { AuctionModule } from '../auction/auction.module';
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService],
   imports: [
-    SequelizeModule.forFeature([User, Role, UserRoles, Product, Order]),
+    SequelizeModule.forFeature([
+      User,
+      Role,
+      UserRoles,
+      Product,
+      Order,
+      Auction,
+    ]),
     RolesModule,
     forwardRef(() => AuthModule),
     ProductModule,
+    AuctionModule,
     OrderModule,
   ],
   exports: [UsersService],

@@ -17,6 +17,9 @@ import { OrderModule } from './orders/order.module';
 import { Order } from './orders/order.model';
 import { OrderItem } from './orders/order-item.model';
 import { Role as RoleEnum } from './roles/enums/role.enum';
+import { AuctionModule } from './auction/auction.module';
+import { BidsModule } from './bids/bids.module';
+import { Auction } from './auction/auction.model';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,7 +38,7 @@ import { Role as RoleEnum } from './roles/enums/role.enum';
       dialectOptions: {
         ssl: { rejectUnauthorized: false },
       },
-      models: [User, Role, UserRoles, Product, Order, OrderItem],
+      models: [User, Role, UserRoles, Product, Order, OrderItem, Auction],
     }),
     UsersModule,
     RolesModule,
@@ -43,6 +46,8 @@ import { Role as RoleEnum } from './roles/enums/role.enum';
     ProductModule,
     CaslModule,
     OrderModule,
+    AuctionModule,
+    BidsModule,
   ],
   controllers: [],
   providers: [],

@@ -15,11 +15,11 @@ import {
   Patch,
   ForbiddenException,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { AuctionService } from './auction.service';
 import {
-  CreateProductDto,
-  CreateProductDtoResp,
-} from './dto/create-product.dto';
+  CreateAuctionDto,
+  CreateAuctionDtoResp,
+} from './dto/create-auction.dto';
 import {
   ApiBody,
   ApiConsumes,
@@ -33,11 +33,13 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from '../roles/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Product } from './product.model';
+import { Auction } from './auction.model';
 import { Role } from '../roles/enums/role.enum';
 import { Roles } from '../roles/decorators/roles.decorator';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { UpdateProductImageDto } from './dto/update-product-image.dto';
+import {
+  UpdateAuctionDto,
+  UpdateAuctionImageDto,
+} from './dto/update-auction.dto';
 import {
   Action,
   AppAbility,
@@ -48,15 +50,15 @@ import { CheckPolicies } from '../casl/decorators/check-policies-key';
 import { Request } from 'express';
 import { RequestUser } from '../types/request-user';
 import { UnAthorizationResponse } from '../types/response/UnAthorizationResponse';
-import { classToPlain, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { BadRequestExeption } from '../types/response/BadRequestExeption';
 
-@ApiTags('Продукты')
+@ApiTags('Аукцион')
 @ApiInternalServerErrorResponse()
-@Controller('products')
-export class ProductController {
+@Controller('auctions')
+export class AuctionController {
   constructor(
-    private readonly productService: ProductService,
+    private readonly auctionService: AuctionService,
     private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
@@ -64,104 +66,103 @@ export class ProductController {
   @ApiSecurity('bearer')
   @ApiResponse({ status: 401, type: UnAthorizationResponse })
   @ApiResponse({ status: 400, type: BadRequestExeption })
-  @ApiResponse({ status: 201, type: CreateProductDtoResp })
+  @ApiResponse({ status: 201, type: CreateAuctionDtoResp })
   @UseInterceptors(FileInterceptor('photo'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Add new product',
-    type: CreateProductDto,
+    description: 'Add new auction',
+    type: CreateAuctionDto,
   })
   @UseGuards(PoliciesGuard)
-  @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Product))
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Auction))
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @UploadedFile() photo,
-    @Body() createProductDto: CreateProductDto,
+    @Body() createAuctionDto: CreateAuctionDto,
     @Req() req: Request,
   ) {
     const user = req.user as { userId: number; roles: Role[] };
-    const product = await this.productService.create(
-      createProductDto,
+    const auction = await this.auctionService.create(
+      createAuctionDto,
       photo,
       user.userId,
     );
-    return plainToClass(CreateProductDtoResp, product);
+    return plainToClass(CreateAuctionDtoResp, auction);
   }
 
   @ApiOperation({ summary: 'Получить все продукты' })
   @Get()
-  @ApiResponse({ status: 200, type: [Product] })
+  @ApiResponse({ status: 200, type: [Auction] })
   @UseGuards(PoliciesGuard)
-  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Product))
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Auction))
   @ApiQuery({ name: 'limit', type: 'Number', required: false })
   @ApiQuery({ name: 'offset', type: 'Number', required: false })
   async findAll(
     @Query('limit') limit?: number,
     @Query('offset') offset?: number,
   ) {
-    const products = await this.productService.findAll(offset, limit);
-    return products.map((product) =>
-      plainToClass(CreateProductDtoResp, product),
-    );
+    const auctions = await this.auctionService.findAll(offset, limit);
+    return auctions;
   }
 
   @ApiOperation({ summary: 'Получить информацию о конкретном продукте' })
-  @ApiResponse({ status: 200, type: Product })
+  @ApiResponse({ status: 200, type: Auction })
   @UseGuards(PoliciesGuard)
-  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Product))
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Auction))
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const product = await this.productService.findOne(+id);
-    if (!product) {
+    const auction = await this.auctionService.findOne(+id);
+    if (!auction) {
       throw new NotFoundException('Такого продукта не существует');
     }
-    return plainToClass(CreateProductDtoResp, product);
+    return auction;
   }
 
   @ApiOperation({ summary: 'Обновить информацию о продукте' })
   @ApiSecurity('bearer')
   @ApiResponse({ status: 401, type: UnAthorizationResponse })
   @ApiResponse({ status: 400, type: BadRequestExeption })
-  @ApiResponse({ status: 200, type: Product })
+  @ApiResponse({ status: 200, type: Auction })
   @ApiBody({
     description: 'Обновить главную информацию',
-    type: UpdateProductDto,
+    type: UpdateAuctionDto,
   })
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
     @Req() req: RequestUser,
-    @Body() updateProductDto: UpdateProductDto,
+    @Body() updateAuctionDto: UpdateAuctionDto,
   ) {
     const ability = this.caslAbilityFactory.createForUser(req.user);
-    const product = await this.productService.findOne(id);
-    if (!product) {
+    const auction = await this.auctionService.findOne(id);
+    if (!auction) {
       throw new NotFoundException();
     }
-    if (req.user && ability.can(Action.Update, product)) {
+    if (req.user && ability.can(Action.Update, auction)) {
+      console.log(updateAuctionDto);
       const {
         numberOfAffectedRows,
-        updatedProduct,
-      } = await this.productService.update(+id, updateProductDto);
+        updatedAuction,
+      } = await this.auctionService.update(+id, updateAuctionDto);
       if (numberOfAffectedRows === 0) {
         throw new NotFoundException('Такой новости не существует');
       }
-      return updatedProduct;
+      return updatedAuction;
     }
     throw new ForbiddenException('Нет доступа к этому продукту');
   }
 
   @ApiOperation({ summary: 'Обновить картинку продукта' })
-  @ApiResponse({ status: 201, type: Product })
+  @ApiResponse({ status: 201, type: Auction })
   @ApiResponse({ status: 401, type: UnAthorizationResponse })
   @ApiSecurity('bearer')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Add new news',
-    type: UpdateProductImageDto,
+    type: UpdateAuctionImageDto,
   })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
@@ -171,19 +172,19 @@ export class ProductController {
     @Req() req: RequestUser,
   ) {
     const ability = this.caslAbilityFactory.createForUser(req.user);
-    const product = await this.productService.findOne(id);
-    if (!product) {
+    const auction = await this.auctionService.findOne(id);
+    if (!auction) {
       throw new NotFoundException();
     }
-    if (req.user && ability.can(Action.Update, product)) {
+    if (req.user && ability.can(Action.Update, auction)) {
       const {
         numberOfAffectedRows,
-        updatedProduct,
-      } = await this.productService.updateImage(+id, image);
+        updatedAuction,
+      } = await this.auctionService.updateImage(+id, image);
       if (numberOfAffectedRows === 0) {
         throw new NotFoundException('Такой новости не существует');
       }
-      return updatedProduct;
+      return updatedAuction;
     }
     throw new ForbiddenException('Нет доступа к этому продукту');
   }
@@ -197,9 +198,9 @@ export class ProductController {
   @Delete(':id')
   async remove(@Param('id') id: number, @Req() req: RequestUser) {
     const ability = this.caslAbilityFactory.createForUser(req.user);
-    const product = await this.productService.findOne(id);
-    if (req.user && ability.can(Action.Update, product)) {
-      const deleted = await this.productService.delete(id);
+    const auction = await this.auctionService.findOne(id);
+    if (req.user && ability.can(Action.Update, auction)) {
+      const deleted = await this.auctionService.delete(id);
       if (deleted === 0) {
         throw new NotFoundException('Такой новости не существует');
       }

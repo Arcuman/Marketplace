@@ -11,6 +11,7 @@ import { Role } from '../roles/roles.model';
 import { UserRoles } from '../roles/user-roles.model';
 import { Order } from '../orders/order.model';
 import { Product } from '../product/product.model';
+import { Auction } from '../auction/auction.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -49,6 +50,9 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Product)
   products: Product[];
+
+  @HasMany(() => Auction)
+  auctions: Auction[];
 
   @HasMany(() => Order)
   orders: Order[];

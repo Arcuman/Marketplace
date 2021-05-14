@@ -11,10 +11,15 @@ import { Product } from '../product/product.model';
 import { Injectable } from '@nestjs/common';
 import { Role } from '../roles/enums/role.enum';
 import { Order } from '../orders/order.model';
+import { Auction } from '../auction/auction.model';
 
 type Subjects =
   | InferSubjects<
-      typeof User | typeof RoleModel | typeof Product | typeof Order
+      | typeof User
+      | typeof RoleModel
+      | typeof Product
+      | typeof Order
+      | typeof Auction
     >
   | 'all';
 
@@ -34,17 +39,17 @@ export class CaslAbilityFactory {
     const { can, cannot, build } = new AbilityBuilder<
       Ability<[Action, Subjects]>
     >(Ability as AbilityClass<AppAbility>);
-
+    console.log({ user });
     if (!user) {
-      can(Action.Read, Product);
+      can(Action.Read, [Product, Auction]);
     } else if (user.roles.includes(Role.ADMIN)) {
       can(Action.Manage, 'all'); // read-write access to everything
     } else {
-      can(Action.Read, [Product]);
+      can(Action.Read, [Product, Auction]);
       can(Action.Read, [Order], { userId: user.userId });
-      can(Action.Create, [Product, Order]);
-      can(Action.Update, [Product], { userId: user.userId });
-      can(Action.Delete, [Product], { userId: user.userId });
+      can(Action.Create, [Product, Order, Auction]);
+      can(Action.Update, [Product, Auction], { userId: user.userId });
+      can(Action.Delete, [Product, Auction], { userId: user.userId });
     }
 
     return build({

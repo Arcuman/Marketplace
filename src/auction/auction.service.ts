@@ -1,33 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { Product } from './product.model';
+import { CreateAuctionDto } from './dto/create-auction.dto';
+import { UpdateAuctionDto } from './dto/update-auction.dto';
+import { Auction } from './auction.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { FilesService, FileType } from '../files/files.service';
 import { User } from '../users/users.model';
 
 @Injectable()
-export class ProductService {
+export class AuctionService {
   constructor(
     private fileService: FilesService,
-    @InjectModel(Product) private productRepository: typeof Product,
+    @InjectModel(Auction) private auctionRepository: typeof Auction,
   ) {}
 
   async create(
-    createProductDto: CreateProductDto,
+    createAuctionDto: CreateAuctionDto,
     image: string,
     userId: number,
-  ): Promise<Product> {
+  ): Promise<Auction> {
     const imagePath = this.fileService.createFile(FileType.IMAGE, image);
-    return await this.productRepository.create({
-      ...createProductDto,
+    return await this.auctionRepository.create({
+      ...createAuctionDto,
       photo: imagePath,
       userId,
+      bidStart: new Date(Date.now()),
     });
   }
 
   async findAll(offset = 0, limit = 10) {
-    return await this.productRepository.findAll({
+    return await this.auctionRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
       include: [User],
@@ -35,40 +36,40 @@ export class ProductService {
   }
 
   async findOne(id: number) {
-    return await this.productRepository.findByPk(id, {
+    return await this.auctionRepository.findByPk(id, {
       include: [User],
     });
   }
 
   async delete(id: number) {
-    return await this.productRepository.destroy({ where: { id } });
+    return await this.auctionRepository.destroy({ where: { id } });
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: number, updateAuctionDto: UpdateAuctionDto) {
     const [
       numberOfAffectedRows,
-      [updatedProduct],
-    ] = await this.productRepository.update(
-      { ...updateProductDto },
+      [updatedAuction],
+    ] = await this.auctionRepository.update(
+      { ...updateAuctionDto },
       { where: { id }, returning: true },
     );
-    return { numberOfAffectedRows, updatedProduct };
+    return { numberOfAffectedRows, updatedAuction };
   }
 
   async updateImage(id: number, image: any) {
     const imagePath = this.fileService.createFile(FileType.IMAGE, image);
     const [
       numberOfAffectedRows,
-      [updatedProduct],
-    ] = await this.productRepository.update(
+      [updatedAuction],
+    ] = await this.auctionRepository.update(
       { photo: imagePath },
       { where: { id }, returning: true },
     );
-    return { numberOfAffectedRows, updatedProduct };
+    return { numberOfAffectedRows, updatedAuction };
   }
 
-  async findProductsByUserId(userId: number, limit = 10, offset = 0) {
-    return await this.productRepository.findAll({
+  async findAuctionsByUserId(userId: number, limit = 10, offset = 0) {
+    return await this.auctionRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
       where: { userId },
