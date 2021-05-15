@@ -13,7 +13,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: '+375447689764', description: 'Телефон' })
   @IsString({ message: 'Должно быть строкой' })
-  @IsPhoneNumber('BY')
+  @IsPhoneNumber('BY', { message: 'Введите корректный номер' })
   readonly phone: string;
 
   @ApiProperty({ example: '12345', description: 'пароль' })

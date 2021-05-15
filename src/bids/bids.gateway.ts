@@ -37,7 +37,8 @@ export class BidsGateway implements OnGatewayInit {
   ) {
     const userId = (client as any).userId;
     const bid = await this.bidsService.create(data.bidInfo, userId);
-    this.wss.to(data.room).emit('newBid', bid);
+    const bidWithUser = await this.bidsService.findOne(bid.id);
+    this.wss.to(data.room).emit('newBid', bidWithUser);
   }
 
   @SubscribeMessage('joinedRoom')

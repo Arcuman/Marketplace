@@ -114,8 +114,9 @@ export class AuctionController {
   async findOne(@Param('id') id: string) {
     const auction = await this.auctionService.findOne(+id);
     if (!auction) {
-      throw new NotFoundException('Такого продукта не существует');
+      throw new NotFoundException('Такого аукциона не существует');
     }
+    auction.bids = auction.bids.sort((a, b) => b.bid - a.bid);
     return auction;
   }
 

@@ -32,7 +32,7 @@ export class AuctionService {
     return await this.auctionRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
-      include: [User],
+      include: [User, Bid],
     });
   }
 

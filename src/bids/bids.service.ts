@@ -16,7 +16,7 @@ export class BidsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} bid`;
+    return Bid.findByPk(id, { include: [User] });
   }
 
   update(id: number, updateBidDto: UpdateBidDto) {
