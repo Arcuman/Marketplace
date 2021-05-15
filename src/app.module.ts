@@ -20,6 +20,8 @@ import { Role as RoleEnum } from './roles/enums/role.enum';
 import { AuctionModule } from './auction/auction.module';
 import { BidsModule } from './bids/bids.module';
 import { Auction } from './auction/auction.model';
+import { BidsGateway } from './bids/bids.gateway';
+import { Bid } from './bids/bids.model';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +31,7 @@ import { Auction } from './auction/auction.model';
       rootPath: path.resolve(__dirname, 'static'),
     }),
     SequelizeModule.forRoot({
+      logging: false,
       dialect: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRESS_PORT),
@@ -38,7 +41,7 @@ import { Auction } from './auction/auction.model';
       dialectOptions: {
         ssl: { rejectUnauthorized: false },
       },
-      models: [User, Role, UserRoles, Product, Order, OrderItem, Auction],
+      models: [User, Role, UserRoles, Product, Order, OrderItem, Auction, Bid],
     }),
     UsersModule,
     RolesModule,

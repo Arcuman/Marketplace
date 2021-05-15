@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from './pipes/validation.pipe';
-import sequelize from 'sequelize';
-import { Role } from './roles/roles.model';
+import { join } from 'path';
 
 async function bootstrap() {
   try {
     const PORT = process.env.PORT || 5000;
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
     app.enableCors();
     const config = new DocumentBuilder()
       .setTitle('Optical Salon')
@@ -23,7 +23,7 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/api/docs', app, document);
-
+    app.useStaticAssets(join(__dirname, '..', 'static'));
     app.useGlobalPipes(new ValidationPipe());
     app.setGlobalPrefix('api');
     await app.listen(PORT, () =>

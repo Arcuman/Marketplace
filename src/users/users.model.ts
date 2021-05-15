@@ -2,6 +2,7 @@ import {
   BelongsToMany,
   Column,
   DataType,
+  DefaultScope,
   HasMany,
   Model,
   Table,
@@ -18,6 +19,9 @@ interface UserCreationAttrs {
   password: string;
 }
 
+@DefaultScope(() => ({
+  attributes: ['id', 'email', 'phone'],
+}))
 @Table({ tableName: 'users' })
 export class User extends Model<User, UserCreationAttrs> {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })

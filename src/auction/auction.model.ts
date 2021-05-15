@@ -3,12 +3,14 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Length,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/users.model';
+import { Bid } from '../bids/bids.model';
 
 interface AuctionCreationAttrs {
   name: string;
@@ -81,4 +83,8 @@ export class Auction extends Model<Auction, AuctionCreationAttrs> {
   @ApiProperty({ example: User, description: 'Продавец', type: () => User })
   @BelongsTo(() => User)
   seller: User;
+
+  @ApiProperty({ description: 'Ставки', type: () => [Bid] })
+  @HasMany(() => Bid)
+  bids: Bid[];
 }

@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { UpdateBidDto } from './dto/update-bid.dto';
+import { Bid } from './bids.model';
+import { User } from '../users/users.model';
 
 @Injectable()
 export class BidsService {
-  create(createBidDto: CreateBidDto) {
-    return 'This action adds a new bid';
+  create(createBidDto: CreateBidDto, userId: number) {
+    console.log(createBidDto);
+    return Bid.create({ ...createBidDto, userId }, { include: [User] });
   }
 
   findAll() {

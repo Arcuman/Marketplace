@@ -30,7 +30,11 @@ export class ProductService {
     return await this.productRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
-      include: [User],
+      include: [
+        {
+          model: User,
+        },
+      ],
     });
   }
 

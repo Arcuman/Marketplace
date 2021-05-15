@@ -5,6 +5,7 @@ import { Auction } from './auction.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { FilesService, FileType } from '../files/files.service';
 import { User } from '../users/users.model';
+import { Bid } from '../bids/bids.model';
 
 @Injectable()
 export class AuctionService {
@@ -37,7 +38,7 @@ export class AuctionService {
 
   async findOne(id: number) {
     return await this.auctionRepository.findByPk(id, {
-      include: [User],
+      include: [User, Bid],
     });
   }
 

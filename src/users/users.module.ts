@@ -13,6 +13,7 @@ import { Product } from '../product/product.model';
 import { OrderModule } from '../orders/order.module';
 import { Auction } from '../auction/auction.model';
 import { AuctionModule } from '../auction/auction.module';
+import { BidsModule } from '../bids/bids.module';
 
 @Module({
   controllers: [UsersController],
@@ -31,6 +32,7 @@ import { AuctionModule } from '../auction/auction.module';
     ProductModule,
     AuctionModule,
     OrderModule,
+    forwardRef(() => BidsModule),
   ],
   exports: [UsersService],
 })
