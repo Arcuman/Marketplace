@@ -49,6 +49,7 @@ export class UsersService {
       include: [
         {
           model: RoleModel,
+          attributes: ['password'],
         },
       ],
     });
