@@ -38,7 +38,13 @@ export class AuctionService {
 
   async findOne(id: number) {
     return await this.auctionRepository.findByPk(id, {
-      include: [User, Bid],
+      include: [
+        User,
+        {
+          model: Bid,
+          include: [User],
+        },
+      ],
     });
   }
 
