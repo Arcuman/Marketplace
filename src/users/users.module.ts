@@ -14,10 +14,11 @@ import { OrderModule } from '../orders/order.module';
 import { Auction } from '../auction/auction.model';
 import { AuctionModule } from '../auction/auction.module';
 import { BidsModule } from '../bids/bids.module';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, CaslAbilityFactory],
   imports: [
     SequelizeModule.forFeature([
       User,

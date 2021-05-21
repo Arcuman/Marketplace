@@ -2,6 +2,7 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { ValidationException } from '../exceptions/validation.exception';
+import { log } from 'util';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {
@@ -13,6 +14,7 @@ export class ValidationPipe implements PipeTransform<any> {
     if (metadata.type === 'query') {
       return value;
     }
+    console.log(obj);
     const errors = await validate(obj, {});
     if (errors.length) {
       const messages = errors.map((err) => {

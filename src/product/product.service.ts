@@ -71,6 +71,24 @@ export class ProductService {
     return { numberOfAffectedRows, updatedProduct };
   }
 
+  async fullUpdate(id: number, updateProductDto: UpdateProductDto, image: any) {
+    delete updateProductDto.photo;
+    if (image) {
+      updateProductDto.photo = this.fileService.createFile(
+        FileType.IMAGE,
+        image,
+      );
+    }
+    const [
+      numberOfAffectedRows,
+      [updatedProduct],
+    ] = await this.productRepository.update(
+      { ...updateProductDto },
+      { where: { id }, returning: true },
+    );
+    return { numberOfAffectedRows, updatedProduct };
+  }
+
   async findProductsByUserId(userId: number, limit = 10, offset = 0) {
     return await this.productRepository.findAll({
       limit: Number(limit),

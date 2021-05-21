@@ -6,15 +6,9 @@ import {
 } from '@nestjs/websockets/decorators';
 import { BidsService } from './bids.service';
 import { CreateBidDto } from './dto/create-bid.dto';
-import { UpdateBidDto } from './dto/update-bid.dto';
-import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
-} from '@nestjs/websockets';
-import { ExecutionContext, Logger, UseGuards } from '@nestjs/common';
+import { OnGatewayInit } from '@nestjs/websockets';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { WsGuard } from '../auth/guards/ws.guard';
 
 @WebSocketGateway()

@@ -18,7 +18,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'Авторизация' })
-  @ApiResponse({ status: 200, description: 'Return access token' })
+  @ApiResponse({ status: 200, description: 'Возвращает токен' })
   @ApiResponse({ status: 400, type: BadRequestExeption })
   @UseGuards(LocalAuthGuard)
   @Post('/login')
@@ -28,7 +28,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Регистрация' })
   @ApiResponse({ status: 400, type: BadRequestExeption })
-  @ApiResponse({ status: 200, description: 'Return access token' })
+  @ApiResponse({ status: 200, description: 'Возвращает токен' })
   @Post('/registration')
   registration(@Body() userDto: CreateUserDto) {
     return this.authService.registration(userDto);

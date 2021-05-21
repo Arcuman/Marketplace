@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsString, IsNotEmpty, MaxLength, Min } from 'class-validator';
+import { User } from '../../users/users.model';
 
 @Exclude()
-export class CreateProductDto {
+export class BaseProductDto {
   @Expose()
   @ApiProperty({
     example: 'Nivea',
@@ -54,7 +55,10 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Обязательное поле' })
   @Min(1, { message: 'Минимальное значени 1' })
   quantity: number;
+}
 
+@Exclude()
+export class CreateProductDto extends BaseProductDto {
   @Expose()
   @ApiProperty({ type: 'string', format: 'binary' })
   photo: any;
@@ -65,4 +69,8 @@ export class CreateProductDtoResp extends CreateProductDto {
   @Expose()
   @ApiProperty({ example: 1, type: 'Number' })
   id: number;
+
+  @Expose()
+  @ApiProperty({ example: 1, type: User })
+  seller: User;
 }

@@ -47,6 +47,7 @@ export class CaslAbilityFactory {
     } else {
       can(Action.Read, [Product, Auction]);
       can(Action.Read, [Order], { userId: user.userId });
+      can(Action.Read, [User], { id: user.userId });
       can(Action.Create, [Product, Order, Auction]);
       can(Action.Update, [Product, Auction], { userId: user.userId });
       can(Action.Delete, [Product, Auction], { userId: user.userId });

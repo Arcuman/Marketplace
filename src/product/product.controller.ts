@@ -119,40 +119,6 @@ export class ProductController {
     return plainToClass(CreateProductDtoResp, product);
   }
 
-  @ApiOperation({ summary: 'Обновить информацию о продукте' })
-  @ApiSecurity('bearer')
-  @ApiResponse({ status: 401, type: UnAthorizationResponse })
-  @ApiResponse({ status: 400, type: BadRequestExeption })
-  @ApiResponse({ status: 200, type: Product })
-  @ApiBody({
-    description: 'Обновить главную информацию',
-    type: UpdateProductDto,
-  })
-  @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Req() req: RequestUser,
-    @Body() updateProductDto: UpdateProductDto,
-  ) {
-    const ability = this.caslAbilityFactory.createForUser(req.user);
-    const product = await this.productService.findOne(id);
-    if (!product) {
-      throw new NotFoundException();
-    }
-    if (req.user && ability.can(Action.Update, product)) {
-      const {
-        numberOfAffectedRows,
-        updatedProduct,
-      } = await this.productService.update(+id, updateProductDto);
-      if (numberOfAffectedRows === 0) {
-        throw new NotFoundException('Такой новости не существует');
-      }
-      return updatedProduct;
-    }
-    throw new ForbiddenException('Нет доступа к этому продукту');
-  }
-
   @ApiOperation({ summary: 'Обновить картинку продукта' })
   @ApiResponse({ status: 201, type: Product })
   @ApiResponse({ status: 401, type: UnAthorizationResponse })
@@ -180,6 +146,42 @@ export class ProductController {
         numberOfAffectedRows,
         updatedProduct,
       } = await this.productService.updateImage(+id, image);
+      if (numberOfAffectedRows === 0) {
+        throw new NotFoundException('Такой новости не существует');
+      }
+      return updatedProduct;
+    }
+    throw new ForbiddenException('Нет доступа к этому продукту');
+  }
+
+  @ApiOperation({ summary: 'Обновить продукт с картинкой' })
+  @ApiResponse({ status: 201, type: Product })
+  @ApiResponse({ status: 401, type: UnAthorizationResponse })
+  @ApiResponse({ status: 403 })
+  @ApiSecurity('bearer')
+  @UseInterceptors(FileInterceptor('photo'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: UpdateProductDto,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id')
+  async fullUpdate(
+    @Param('id') id: number,
+    @UploadedFile() image,
+    @Req() req: RequestUser,
+    @Body() createNewsDto: UpdateProductDto,
+  ) {
+    const ability = this.caslAbilityFactory.createForUser(req.user);
+    const product = await this.productService.findOne(id);
+    if (!product) {
+      throw new NotFoundException();
+    }
+    if (req.user && ability.can(Action.Update, product)) {
+      const {
+        numberOfAffectedRows,
+        updatedProduct,
+      } = await this.productService.fullUpdate(+id, createNewsDto, image);
       if (numberOfAffectedRows === 0) {
         throw new NotFoundException('Такой новости не существует');
       }

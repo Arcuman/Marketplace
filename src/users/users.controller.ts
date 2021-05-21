@@ -1,4 +1,12 @@
-import { Body, Controller, Req, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Req,
+  Get,
+  Post,
+  UseGuards,
+  ForbiddenException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   ApiInternalServerErrorResponse,
@@ -19,6 +27,14 @@ import { Request } from 'express';
 import { Order } from '../orders/order.model';
 import { OrderService } from '../orders/order.service';
 import { BadRequestExeption } from '../types/response/BadRequestExeption';
+import { PoliciesGuard } from '../casl/guards/policies-guard.guard';
+import { CheckPolicies } from '../casl/decorators/check-policies-key';
+import {
+  Action,
+  AppAbility,
+  CaslAbilityFactory,
+} from '../casl/casl-ability.factory';
+import { RequestUser } from '../types/request-user';
 
 @ApiInternalServerErrorResponse()
 @ApiTags('Пользователи')
@@ -30,6 +46,7 @@ export class UsersController {
     private usersService: UsersService,
     private productService: ProductService,
     private orderService: OrderService,
+    private caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   @ApiOperation({ summary: 'Получить всех пользователей' })
@@ -39,6 +56,18 @@ export class UsersController {
   @Get()
   getAll() {
     return this.usersService.getAllUsers();
+  }
+
+  @ApiOperation({ summary: 'Получить информацию профиля' })
+  @ApiResponse({ status: 200, type: User })
+  @Get('profile')
+  async getOne(@Req() req: RequestUser) {
+    const ability = this.caslAbilityFactory.createForUser(req.user);
+    const user = await this.usersService.getUserById(req.user.userId);
+    if (req.user && ability.can(Action.Read, user)) {
+      return user;
+    }
+    throw new ForbiddenException('Нет доступа к этому профилю');
   }
 
   @ApiOperation({ summary: 'Выдать роль' })

@@ -11,6 +11,9 @@ import { RolesService } from '../roles/roles.service';
 import { AddRoleDto } from './dto/add-role.dto';
 import { Sequelize } from 'sequelize-typescript';
 import { Role as RoleModel } from '../roles/roles.model';
+import { Product } from '../product/product.model';
+import { Auction } from '../auction/auction.model';
+import { Order } from '../orders/order.model';
 import { Role } from '../roles/enums/role.enum';
 
 @Injectable()
@@ -50,6 +53,23 @@ export class UsersService {
       include: [
         {
           model: RoleModel,
+        },
+      ],
+    });
+  }
+
+  async getUserById(id: number) {
+    return await this.userRepository.findByPk(id, {
+      attributes: ['id', 'email', 'name', 'phone'],
+      include: [
+        {
+          model: Product,
+        },
+        {
+          model: Auction,
+        },
+        {
+          model: Order,
         },
       ],
     });
