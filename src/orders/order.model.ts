@@ -10,7 +10,6 @@ import {
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/users.model';
-import { OrderStatus } from './enums/order-status.enum';
 import { TransactionStatus } from './enums/transaction-status.enum';
 import { OrderItem } from './order-item.model';
 

@@ -28,11 +28,18 @@ export class AuctionService {
     });
   }
 
-  async findAll(offset = 0, limit = 10) {
+  async findAll(offset = 0, limit = 15) {
     return await this.auctionRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
       include: [User, Bid],
+    });
+  }
+
+  async findAllByUserId(userId: number) {
+    return await this.auctionRepository.findAll({
+      where: { userId },
+      include: [Bid],
     });
   }
 

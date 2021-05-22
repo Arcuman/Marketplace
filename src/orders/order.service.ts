@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { OrderItemDto } from './dto/order-item.dto';
 import { OrderItem } from './order-item.model';
 import { Transaction } from 'sequelize';
 import { InsertOrderItemDto } from './dto/insert-order-item.dto';
+import { Action } from '../casl/casl-ability.factory';
 
 @Injectable()
 export class OrderService {
@@ -136,7 +138,27 @@ export class OrderService {
 
   async findOrderByPk(orderId: number) {
     return await this.orderRepository.findByPk(orderId, {
-      include: [OrderItem],
+      include: [
+        {
+          model: OrderItem,
+          include: [Product],
+        },
+      ],
     });
+  }
+
+  async findOrderItemByPk(orderId: number) {
+    return await this.orderItemRepository.findByPk(orderId, {
+      include: [Product, Order],
+    });
+  }
+
+  async updateOrderItemStatus(orderItem: OrderItem, status: OrderStatus) {
+    orderItem.orderStatus = status;
+    return orderItem.save();
+  }
+  async updateOrderStatus(order: Order, status: TransactionStatus) {
+    order.transactionStatus = status;
+    return order.save();
   }
 }

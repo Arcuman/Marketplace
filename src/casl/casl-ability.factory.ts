@@ -12,6 +12,7 @@ import { Injectable } from '@nestjs/common';
 import { Role } from '../roles/enums/role.enum';
 import { Order } from '../orders/order.model';
 import { Auction } from '../auction/auction.model';
+import { OrderItem } from '../orders/order-item.model';
 
 type Subjects =
   | InferSubjects<
@@ -20,6 +21,7 @@ type Subjects =
       | typeof Product
       | typeof Order
       | typeof Auction
+      | typeof OrderItem
     >
   | 'all';
 
@@ -49,7 +51,8 @@ export class CaslAbilityFactory {
       can(Action.Read, [Order], { userId: user.userId });
       can(Action.Read, [User], { id: user.userId });
       can(Action.Create, [Product, Order, Auction]);
-      can(Action.Update, [Product, Auction], { userId: user.userId });
+      can(Action.Update, [Product, Auction, Order], { userId: user.userId });
+      can(Action.Update, [User], { id: user.userId });
       can(Action.Delete, [Product, Auction], { userId: user.userId });
     }
 

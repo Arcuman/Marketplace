@@ -15,6 +15,8 @@ import { Auction } from '../auction/auction.model';
 import { AuctionModule } from '../auction/auction.module';
 import { BidsModule } from '../bids/bids.module';
 import { CaslAbilityFactory } from '../casl/casl-ability.factory';
+import { FilesService } from '../files/files.service';
+import { FilesModule } from '../files/files.module';
 
 @Module({
   controllers: [UsersController],
@@ -33,6 +35,7 @@ import { CaslAbilityFactory } from '../casl/casl-ability.factory';
     ProductModule,
     AuctionModule,
     OrderModule,
+    FilesModule,
     forwardRef(() => BidsModule),
   ],
   exports: [UsersService],

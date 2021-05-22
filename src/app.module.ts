@@ -30,7 +30,7 @@ import { Bid } from './bids/bids.model';
       rootPath: path.resolve(__dirname, 'static'),
     }),
     SequelizeModule.forRoot({
-      logging: true,
+      logging: false,
       dialect: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRESS_PORT),

@@ -15,12 +15,16 @@ import { Product } from '../product/product.model';
 import { Auction } from '../auction/auction.model';
 import { Order } from '../orders/order.model';
 import { Role } from '../roles/enums/role.enum';
+import { UpdateProductDto } from '../product/dto/update-product.dto';
+import { FilesService, FileType } from '../files/files.service';
+import { UpdateUserDto } from './dto/update-user-dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     private roleService: RolesService,
+    private fileService: FilesService,
     private sequelize: Sequelize,
   ) {}
 
@@ -60,7 +64,7 @@ export class UsersService {
 
   async getUserById(id: number) {
     return await this.userRepository.findByPk(id, {
-      attributes: ['id', 'email', 'name', 'phone'],
+      attributes: ['id', 'email', 'name', 'phone', 'photo'],
       include: [
         {
           model: Product,
@@ -86,5 +90,20 @@ export class UsersService {
       'Пользователь или роль не найдены',
       HttpStatus.NOT_FOUND,
     );
+  }
+
+  async fullUpdate(id: number, updateUserDto: UpdateUserDto, image: any) {
+    delete updateUserDto.photo;
+    if (image) {
+      updateUserDto.photo = this.fileService.createFile(FileType.IMAGE, image);
+    }
+    const [
+      numberOfAffectedRows,
+      [updatedUser],
+    ] = await this.userRepository.update(
+      { ...updateUserDto },
+      { where: { id }, returning: true },
+    );
+    return { numberOfAffectedRows, updatedUser };
   }
 }
