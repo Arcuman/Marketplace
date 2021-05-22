@@ -5,6 +5,8 @@ import { Product } from './product.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { FilesService, FileType } from '../files/files.service';
 import { User } from '../users/users.model';
+import { Order } from '../orders/order.model';
+import { OrderItem } from '../orders/order-item.model';
 
 @Injectable()
 export class ProductService {
@@ -41,6 +43,31 @@ export class ProductService {
   async findOne(id: number) {
     return await this.productRepository.findByPk(id, {
       include: [User],
+    });
+  }
+
+  async findWithOrderDetail(id: number) {
+    return await this.productRepository.findByPk(id, {
+      include: [
+        {
+          model: OrderItem,
+          attributes: ['id', 'price', 'orderStatus'],
+          include: [
+            {
+              model: Order,
+              attributes: [
+                'country',
+                'city',
+                'address',
+                'phone',
+                'transactionStatus',
+                'orderDate',
+                'deliveryDate',
+              ],
+            },
+          ],
+        },
+      ],
     });
   }
 

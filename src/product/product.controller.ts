@@ -50,6 +50,7 @@ import { RequestUser } from '../types/request-user';
 import { UnAthorizationResponse } from '../types/response/UnAthorizationResponse';
 import { classToPlain, plainToClass } from 'class-transformer';
 import { BadRequestExeption } from '../types/response/BadRequestExeption';
+import { User } from '../users/users.model';
 
 @ApiTags('Продукты')
 @ApiInternalServerErrorResponse()
@@ -57,6 +58,7 @@ import { BadRequestExeption } from '../types/response/BadRequestExeption';
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
+    private readonly orderService: ProductService,
     private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
@@ -208,5 +210,25 @@ export class ProductController {
       return 'Successfully deleted';
     }
     throw new ForbiddenException('Нет доступа к этому продукту');
+  }
+
+  @ApiOperation({ summary: 'Получить заказы товара' })
+  @ApiResponse({ status: 200, type: Product })
+  @ApiSecurity('bearer')
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id/orders')
+  async getOrders(@Param('id') productId: number, @Req() req: RequestUser) {
+    console.log(productId);
+    const ability = this.caslAbilityFactory.createForUser(req.user);
+    const product = await this.productService.findWithOrderDetail(productId);
+    if (!product) {
+      throw new NotFoundException('Такого продукта не существует');
+    }
+    console.log(ability);
+    console.log(req.user);
+    if (req.user && ability.can(Action.Read, product)) {
+      return product;
+    }
+    throw new ForbiddenException('Нет доступа к инофрмации об этом товаре');
   }
 }
