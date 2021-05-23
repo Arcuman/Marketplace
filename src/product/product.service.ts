@@ -7,7 +7,7 @@ import { FilesService, FileType } from '../files/files.service';
 import { User } from '../users/users.model';
 import { Order } from '../orders/order.model';
 import { OrderItem } from '../orders/order-item.model';
-import { Op } from 'sequelize/types';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductService {
