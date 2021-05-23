@@ -7,6 +7,7 @@ import { FilesService, FileType } from '../files/files.service';
 import { User } from '../users/users.model';
 import { Order } from '../orders/order.model';
 import { OrderItem } from '../orders/order-item.model';
+import { Op } from 'sequelize/types';
 
 @Injectable()
 export class ProductService {
@@ -32,6 +33,11 @@ export class ProductService {
     return await this.productRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
+      where: {
+        price: {
+          [Op.gt]: 0,
+        },
+      },
       include: [
         {
           model: User,
