@@ -112,7 +112,7 @@ export class UsersController {
   @ApiResponse({ status: 200, type: [Order] })
   @Roles(Role.USER)
   @UseGuards(RolesGuard)
-  @Get('orders')
+  @Get('auctions')
   getUserAuctions(@Req() req: Request) {
     const user = req.user as { userId: number };
     return this.auctionsService.findAllByUserId(user.userId);
