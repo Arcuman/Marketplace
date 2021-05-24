@@ -34,7 +34,7 @@ export class ProductService {
       limit: Number(limit),
       offset: Number(offset),
       where: {
-        price: {
+        quantity: {
           [Op.gt]: 0,
         },
       },

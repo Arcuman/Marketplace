@@ -103,6 +103,7 @@ export class ProductController {
     @Query('offset') offset?: number,
   ) {
     const products = await this.productService.findAll(offset, limit);
+    console.log(products);
     return products.map((product) =>
       plainToClass(CreateProductDtoResp, product),
     );
