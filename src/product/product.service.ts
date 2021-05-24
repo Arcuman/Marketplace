@@ -29,7 +29,7 @@ export class ProductService {
     });
   }
 
-  async findAll(offset = 0, limit = 10) {
+  async findAll(offset = 0, limit = 25) {
     return await this.productRepository.findAll({
       limit: Number(limit),
       offset: Number(offset),
