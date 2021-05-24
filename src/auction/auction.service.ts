@@ -24,7 +24,6 @@ export class AuctionService {
       ...createAuctionDto,
       photo: imagePath,
       userId,
-      bidStart: new Date(Date.now()),
     });
   }
 

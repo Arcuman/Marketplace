@@ -59,7 +59,23 @@ export class CreateAuctionDto {
   })
   @IsNotEmpty({ message: 'Обязательное поле' })
   @IsDate({ message: 'Должно быть датой' })
-  @MinDate(new Date(Date.now()), { message: 'Некорретная дата: > чем текущая' })
+  @MinDate(new Date(Date.now()), { message: 'Некорретная дата: < чем текущая' })
+  bidStart: Date;
+
+  @Expose()
+  @ApiProperty({
+    example: new Date(Date.now() + 60),
+    description: 'Дата закрытия аукциона',
+  })
+  @Transform((value) => {
+    if (new Date(value.value)) {
+      return new Date(value.value);
+    }
+    return -1;
+  })
+  @IsNotEmpty({ message: 'Обязательное поле' })
+  @IsDate({ message: 'Должно быть датой' })
+  @MinDate(new Date(Date.now()), { message: 'Некорретная дата: < чем текущая' })
   bidEnd: Date;
 
   @Expose()
@@ -72,8 +88,4 @@ export class CreateAuctionDtoResp extends CreateAuctionDto {
   @Expose()
   @ApiProperty({ example: 1, type: 'Number' })
   id: number;
-
-  @Expose()
-  @ApiProperty({ example: 1, type: 'Date' })
-  bidStart: Date;
 }
