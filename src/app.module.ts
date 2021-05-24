@@ -56,7 +56,7 @@ import { Bid } from './bids/bids.model';
 })
 export class AppModule {
   constructor(private sequelize: Sequelize) {
-    this.sequelize.sync({ alter: true }).then(() =>
+    this.sequelize.sync({ force: true }).then(() =>
       Role.count().then((count) => {
         if (count === 0) {
           Role.bulkCreate([
