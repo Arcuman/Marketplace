@@ -40,7 +40,7 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   name: string;
 
   @ApiProperty({ example: 'Отличные часы', description: 'Описание' })
-  @Length({ min: 0, max: 40 })
+  @Length({ min: 0, max: 512 })
   @Column({ type: DataType.STRING, allowNull: false })
   description: string;
 
