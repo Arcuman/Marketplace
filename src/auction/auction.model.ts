@@ -39,7 +39,7 @@ export class Auction extends Model<Auction, AuctionCreationAttrs> {
   name: string;
 
   @ApiProperty({ example: 'Отличные часы', description: 'Описание' })
-  @Length({ min: 0, max: 40 })
+  @Length({ min: 0, max: 255 })
   @Column({ type: DataType.STRING, allowNull: false })
   description: string;
 
